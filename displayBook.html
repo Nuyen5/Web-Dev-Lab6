@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 6 - Question 3: Fetch and Display Books</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 500px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        select {
+            padding: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .book-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Book Information Lookup</h1>
+        
+        <!-- Semantic label and select input -->
+        <label for="bookSelect">Select Book Title:</label>
+        <select id="bookSelect" onchange="displaySelectedBook()">
+            <option value="">-- Select a Book --</option>
+        </select>
+
+        <div id="bookDetails" class="book-card">
+            <p>Select a book title above to display details.</p>
+        </div>
+    </div>
+
+    <script>
+        // Raw GitHub JSON URL
+        const githubJsonUrl = 'https://raw.githubusercontent.com/Nuyen5/Web-Dev-Lab6/refs/heads/main/books.json';
+        
+        let booksData = [];
+
+        // Fetch API lifecycle pattern (lecture notes)
+        fetch(githubJsonUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                booksData = data;
+                populateDropdown(booksData);
+            })
+            .catch(error => {
+                console.error("Error fetching JSON:", error);
+                document.getElementById('bookDetails').innerHTML = 
+                    `<p style="color: red;">Error: Failed to load book data from GitHub.</p>`;
+            });
+
+        // Populate dropdown with options
+        function populateDropdown(books) {
+            const selectElement = document.getElementById('bookSelect');
+            for (let i = 0; i < books.length; i++) {
+                const option = document.createElement('option');
+                option.value = books[i].title;
+                option.textContent = books[i].title;
+                selectElement.appendChild(option);
+            }
+        }
+
+        // Search array and display selected book details
+        function displaySelectedBook() {
+            const selectedTitle = document.getElementById('bookSelect').value;
+            const detailsDiv = document.getElementById('bookDetails');
+
+            if (!selectedTitle) {
+                detailsDiv.innerHTML = "<p>Select a book title above to display details.</p>";
+                return;
+            }
+
+            // Search array for matching object
+            let foundBook = null;
+            for (let i = 0; i < booksData.length; i++) {
+                if (booksData[i].title === selectedTitle) {
+                    foundBook = booksData[i];
+                    break;
+                }
+            }
+
+            if (foundBook) {
+                const genresText = Array.isArray(foundBook.genres) 
+                    ? foundBook.genres.join(", ") 
+                    : foundBook.genres;
+
+                detailsDiv.innerHTML = `
+                    <h2>${foundBook.title}</h2>
+                    <p><strong>Author:</strong> ${foundBook.author}</p>
+                    <p><strong>Publication Year:</strong> ${foundBook.publicationYear}</p>
+                    <p><strong>Genre(s):</strong> ${genresText}</p>
+                `;
+            } else {
+                detailsDiv.innerHTML = "<p style='color: red;'>Book record not found.</p>";
+            }
+        }
+    </script>
+</body>
+</html>
