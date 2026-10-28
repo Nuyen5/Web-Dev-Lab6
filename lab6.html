@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 6 - Question 2</title>
+</head>
+<body>
+    <h1>Lab 6: Client-Side Scripting (JSON)</h1>
+    <p>Check the Browser Console (Inspect -> Console) to view the output.</p>
+
+    <script>
+        // JSON string representation of the book collection
+        const booksJSON = `[
+            {
+                "title": "The Great Gatsby",
+                "author": "F. Scott Fitzgerald",
+                "publicationYear": 1925,
+                "genres": ["Fiction", "Classics"]
+            },
+            {
+                "title": "To Kill a Mockingbird",
+                "author": "Harper Lee",
+                "publicationYear": 1960,
+                "genres": ["Fiction", "Coming-of-Age"]
+            }
+        ]`;
+
+        // Parse JSON string into a JavaScript Object / Array (Lecture notes: JSON.parse)
+        const data = JSON.parse(booksJSON);
+
+        // 1. The title of the first book
+        console.log("Title of the first book:", data[0].title);
+
+        // 2. The author of the second book
+        console.log("Author of the second book:", data[1].author);
+
+        // 3. The genres of all books
+        console.log("Genres of all books:");
+        for (let i = 0; i < data.length; i++) {
+            const genresList = Array.isArray(data[i].genres) 
+                ? data[i].genres.join(", ") 
+                : data[i].genres;
+            console.log(`- Book ${i + 1} (${data[i].title}): ${genresList}`);
+        }
+    </script>
+</body>
+</html>
